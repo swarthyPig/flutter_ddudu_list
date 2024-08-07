@@ -1,10 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../util/check_validate.dart';
+import '../util/show_dialog.dart';
+import '../util/user.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.controller});
 
   final PageController controller;
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -16,6 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _showClearButton = false;
   bool _isObscure = true;
 
+  final auth = FirebaseAuth.instance;
+
   @override
   void initState() {
     super.initState();
@@ -24,6 +32,23 @@ class _LoginScreenState extends State<LoginScreen> {
         _showClearButton = _passController.text.isNotEmpty;
       });
     });
+
+    // 회원가입 후 modal창 context 문제로 해당 로직 작성
+    // 회원가입 후 자동 로그인 되는듯
+    if(auth.currentUser?.uid != null){
+      // 회원 가입 후 바로 home으로 이동해도 되지만 통상적으로 그렇게 안함
+      // 그래서 회원가입 후 유저정보가 있으면 회원가입 직후 인걸로 판단함
+      // 재 로그인 해달라는 modal을 띄우고 로그아웃처리 함(회원가입하면 자동 세션이 생김)
+
+      // initState에서는 context를 사용못함 그래서 Future.delayed를 통해 해결
+      Future.delayed(
+        Duration.zero,
+        () async {
+          showAlertDialog(context, "회원가입에 성공했습니다.\n\n다시 로그인 해주세요.");
+          await auth.signOut();
+        }
+      );
+    }
   }
 
   void _getClearButton() {
@@ -48,16 +73,16 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Image.asset(
               "image/vector-1.png",
               width: 413,
-              height: 457,
+              height: 430,
               //width: MediaQuery.of(context).size.width,
               //height: MediaQuery.of(context).size.height,
             ),
           ),
           const SizedBox(
-            height: 18,
+            height: 15,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               textDirection: TextDirection.ltr,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Log In',
                   style: TextStyle(
                     color: Color(0xFF755DC1),
-                    fontSize: 27,
+                    fontSize: 30,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.bold,
                   ),
@@ -149,31 +174,39 @@ class _LoginScreenState extends State<LoginScreen> {
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: _getClearButton,
-                          icon: FaIcon(
-                              _showClearButton
-                              ? FontAwesomeIcons.circleXmark
-                              : null,
-                          ),
-                          iconSize: 15,
-                        ),
+                      children:
+                      _showClearButton
+                          ?
+                      [IconButton(
+                        onPressed: _getClearButton,
+                        icon: const FaIcon(FontAwesomeIcons.circleXmark),
+                        iconSize: 13,
+                      ),
                         IconButton(
                           onPressed: _toggleObscure,
                           icon: FaIcon(
                             _isObscure
-                            ? FontAwesomeIcons.solidEye
-                            : FontAwesomeIcons.solidEyeSlash,
+                                ? FontAwesomeIcons.solidEye
+                                : FontAwesomeIcons.solidEyeSlash,
                           ),
-                          iconSize: 15,
-                        )
+                          iconSize: 13,
+                        )]
+                          :
+                      [IconButton(
+                        onPressed: _toggleObscure,
+                        icon: FaIcon(
+                          _isObscure
+                              ? FontAwesomeIcons.solidEye
+                              : FontAwesomeIcons.solidEyeSlash,
+                        ),
+                        iconSize: 13,
+                      )
                       ],
                     )
                   ),
                 ),
                 const SizedBox(
-                  height: 25,
+                  height: 20,
                 ),
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -182,11 +215,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () {
+                        var checkEmail = CheckValidate().validateEmail(_emailController.text);
+                        var checkPw = CheckValidate().validatePassword(_passController.text);
 
-                        debugPrint(_emailController.text);
-                        debugPrint("=================================");
-                        debugPrint(_passController.text);
-
+                        if(checkEmail != "pass"){
+                          debugPrint(checkEmail);
+                          showAlertDialog(context, checkEmail);
+                        }else{
+                          if(checkPw != "pass"){
+                            debugPrint(checkPw);
+                            showAlertDialog(context, checkPw);
+                          }else{
+                            userLogin(context, _emailController.text, _passController.text);
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9F7BFF),
@@ -209,7 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   children: [
                     const Text(
-                      'Don’t have an account?',
+                      ' 계정이 없으신가요?ㅠㅠ',
                       style: TextStyle(
                         color: Color(0xFF837E93),
                         fontSize: 13,
@@ -227,12 +269,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             curve: Curves.ease);
                       },
                       child: const Text(
-                        'Sign Up',
+                        '회원가입 하기 ',
                         style: TextStyle(
                           color: Color(0xFF755DC1),
                           fontSize: 13,
                           fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

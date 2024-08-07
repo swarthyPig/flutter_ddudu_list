@@ -1,29 +1,49 @@
+import 'package:ddudu/util/show_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+import '../layout/login_view.dart';
+import '../main.dart';
 
 final auth = FirebaseAuth.instance;
 
-userCreate(id, pw) async {
+userCreate(context, id, pw) async {
   try{
-    var user = await auth.createUserWithEmailAndPassword(
+    await auth.createUserWithEmailAndPassword(
       email: id,
       password: pw,
     );
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) =>  const LoginView())
+    );
   }catch(e){
     print(e);
+    showAlertDialog(context, "회원가입에 실패했습니다.\n\n이미 등록된 이메일 입니다.");
   }
 }
 
-userLogin(id, pw) async {
+userLogin(context, id, pw) async {
   try{
     await auth.signInWithEmailAndPassword(
       email: id,
       password: pw,
     );
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const MyApp())
+    );
   }catch(e){
     print(e);
+    showAlertDialog(context, "로그인에 실패했습니다\n\n아이디 또는 비밀번호를 다시 확인해주세요.");
   }
+
+  return auth;
 }
 
-userLogout() async {
+userLogout(context) async {
   await auth.signOut();
+
+  Navigator.push(context,
+      MaterialPageRoute(builder: (context) =>  const LoginView())
+  );
 }

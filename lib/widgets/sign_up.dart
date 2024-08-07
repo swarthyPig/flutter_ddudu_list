@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../util/check_validate.dart';
+import '../util/show_dialog.dart';
+import '../util/user.dart';
 
 class SingUpScreen extends StatefulWidget {
   const SingUpScreen({super.key, required this.controller});
 
   final PageController controller;
+
   @override
   State<SingUpScreen> createState() => _SingUpScreenState();
 }
@@ -12,6 +18,21 @@ class _SingUpScreenState extends State<SingUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   final TextEditingController _repassController = TextEditingController();
+
+  bool _isPwObscure1 = true;
+  bool _isPwObscure2 = true;
+
+  void _togglePwObscure1() {
+    setState(() {
+      _isPwObscure1 = !_isPwObscure1;
+    });
+  }
+
+  void _togglePwObscure2() {
+    setState(() {
+      _isPwObscure2 = !_isPwObscure2;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +46,16 @@ class _SingUpScreenState extends State<SingUpScreen> {
             child: Image.asset(
               "image/vector-2.png",
               width: 413,
-              height: 457,
+              height: 450,
               //width: MediaQuery.of(context).size.width,
               //height: MediaQuery.of(context).size.height,
             ),
           ),
           const SizedBox(
-            height: 18,
+            height: 15,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               textDirection: TextDirection.ltr,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,9 +64,9 @@ class _SingUpScreenState extends State<SingUpScreen> {
                   'Sign up',
                   style: TextStyle(
                     color: Color(0xFF755DC1),
-                    fontSize: 27,
+                    fontSize: 30,
                     fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(
@@ -58,12 +79,13 @@ class _SingUpScreenState extends State<SingUpScreen> {
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Color(0xFF393939),
-                      fontSize: 13,
+                      fontSize: 12,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w400,
                     ),
                     decoration: const InputDecoration(
                       labelText: 'Email',
+                      hintText: 'exam@exam.com',
                       labelStyle: TextStyle(
                         color: Color(0xFF755DC1),
                         fontSize: 15,
@@ -80,7 +102,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                         borderSide: BorderSide(
-                          width: 1,
+                          width: 2,
                           color: Color(0xFF9F7BFF),
                         ),
                       ),
@@ -94,10 +116,12 @@ class _SingUpScreenState extends State<SingUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 147,
+                      width: 135,
                       height: 56,
                       child: TextField(
                         controller: _passController,
+                        obscureText: _isPwObscure1,
+                        autocorrect: false,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Color(0xFF393939),
@@ -105,43 +129,60 @@ class _SingUpScreenState extends State<SingUpScreen> {
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w400,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Password',
                           hintText: 'Create Password',
-                          hintStyle: TextStyle(
+                          hintStyle: const TextStyle(
                             color: Color(0xFF837E93),
                             fontSize: 10,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                           ),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xFF755DC1),
                             fontSize: 15,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
                           ),
-                          enabledBorder: OutlineInputBorder(
+                          enabledBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             borderSide: BorderSide(
                               width: 1,
                               color: Color(0xFF837E93),
                             ),
                           ),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             borderSide: BorderSide(
-                              width: 1,
+                              width: 2,
                               color: Color(0xFF9F7BFF),
                             ),
+                          ),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: _togglePwObscure1,
+                                icon: FaIcon(
+                                  _isPwObscure1
+                                      ? FontAwesomeIcons.solidEye
+                                      : FontAwesomeIcons.solidEyeSlash,
+                                ),
+                                iconSize: 13,
+                              )
+                            ],
                           ),
                         ),
                       ),
                     ),
                     SizedBox(
-                      width: 147,
+                      width: 135,
                       height: 56,
                       child: TextField(
                         controller: _repassController,
+                        obscureText: _isPwObscure2,
+                        autocorrect: false,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Color(0xFF393939),
@@ -149,34 +190,49 @@ class _SingUpScreenState extends State<SingUpScreen> {
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w400,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Password',
                           hintText: 'Confirm Password',
-                          hintStyle: TextStyle(
+                          hintStyle: const TextStyle(
                             color: Color(0xFF837E93),
                             fontSize: 10,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w400,
                           ),
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xFF755DC1),
                             fontSize: 15,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
                           ),
-                          enabledBorder: OutlineInputBorder(
+                          enabledBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             borderSide: BorderSide(
                               width: 1,
                               color: Color(0xFF837E93),
                             ),
                           ),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             borderSide: BorderSide(
-                              width: 1,
+                              width: 2,
                               color: Color(0xFF9F7BFF),
                             ),
+                          ),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: _togglePwObscure2,
+                                icon: FaIcon(
+                                  _isPwObscure2
+                                      ? FontAwesomeIcons.solidEye
+                                      : FontAwesomeIcons.solidEyeSlash,
+                                ),
+                                iconSize: 13,
+                              )
+                            ],
                           ),
                         ),
                       ),
@@ -184,7 +240,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                   ],
                 ),
                 const SizedBox(
-                  height: 25,
+                  height: 20,
                 ),
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -193,9 +249,32 @@ class _SingUpScreenState extends State<SingUpScreen> {
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () {
-                        widget.controller.animateToPage(2,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.ease);
+                        var checkEmail = CheckValidate().validateEmail(_emailController.text);
+                        var checkPw1 = CheckValidate().validatePassword(_passController.text);
+                        var checkPw2 = CheckValidate().validatePassword(_repassController.text);
+                        var compare = CheckValidate().validateComparePassword(_passController.text, _repassController.text);
+
+                        if(checkEmail != "pass"){
+                          debugPrint(checkEmail);
+                          showAlertDialog(context, checkEmail);
+                        }else{
+                          if(checkPw1 != "pass"){
+                            debugPrint(checkPw1);
+                            showAlertDialog(context, checkPw1);
+                          }else{
+                            if(checkPw2 != "pass"){
+                              debugPrint(checkPw2);
+                              showAlertDialog(context, checkPw2);
+                            }else{
+                              if(compare != "pass"){
+                                debugPrint(compare);
+                                showAlertDialog(context, compare);
+                              }else{
+                                userCreate(context, _emailController.text, _passController.text);
+                              }
+                            }
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF9F7BFF),
@@ -218,13 +297,13 @@ class _SingUpScreenState extends State<SingUpScreen> {
                 Row(
                   children: [
                     const Text(
-                      ' have an account?',
+                      ' 이미계정이 있으신가요?!',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color(0xFF837E93),
                         fontSize: 13,
                         fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(
@@ -237,7 +316,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                             curve: Curves.ease);
                       },
                       child: const Text(
-                        'Log In ',
+                        '로그인하러가기 ',
                         style: TextStyle(
                           color: Color(0xFF755DC1),
                           fontSize: 13,
