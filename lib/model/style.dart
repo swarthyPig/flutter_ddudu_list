@@ -33,9 +33,6 @@ var theme = ThemeData(
     ),
     actionsIconTheme: IconThemeData(color: Colors.black),
   ),
-  textTheme: const TextTheme(
-      headlineSmall: TextStyle(color: Colors.black)
-  ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: Color(0xff5a95ff),
     shape: CircleBorder(),
@@ -44,6 +41,5 @@ var theme = ThemeData(
   ),
   tabBarTheme: const TabBarTheme(
     labelColor: Colors.red,
-
   )
 );

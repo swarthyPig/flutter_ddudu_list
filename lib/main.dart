@@ -1,26 +1,60 @@
 import 'package:ddudu/provider/store.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'firebase_options.dart';
 import 'layout/content.dart';
 import 'layout/footer.dart';
+import 'layout/login_view.dart';
 import 'model/style.dart' as style;
 
-void main() {
-  runApp(
-    MultiProvider(
+final auth = FirebaseAuth.instance;
+
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
+    runApp(
+        DevicePreview(
+          enabled: !kReleaseMode,
+          builder: (context) => const MyApp(), // Wrap your app
+        ),
+
+    );
+  });
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => Store()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: style.theme,
-        home: const Home(),
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
+        theme: auth.currentUser?.uid == null ? ThemeData.light() : style.theme,
+        darkTheme: ThemeData.dark(),
+        home: auth.currentUser?.uid == null ? const LoginView() : const Home(),
       ),
-    )
-  );
+    );
+  }
 }
+
 
 class Home extends StatefulWidget {
   const Home({super.key});

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/top_tab_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+final fireStore = FirebaseFirestore.instance;
 
 class Content extends StatefulWidget {
   const Content({super.key});
@@ -57,11 +60,11 @@ class _ContentState extends State<Content> {
                   children: <Widget>[
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
-                      child: const Center(child: Text("Monthly"),),
+                      child: const Center(child: Text("Monthly1"),),
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
-                      child: const Center(child: Text("Daily"),),
+                      child: const Center(child: Text("Daily2"),),
                     ),
                   ],
                 ),

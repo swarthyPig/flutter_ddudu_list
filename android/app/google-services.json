@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "872569464115",
+    "project_id": "fluttertodo-b4ac7",
+    "storage_bucket": "fluttertodo-b4ac7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872569464115:android:288adc738af6c6e8314a46",
+        "android_client_info": {
+          "package_name": "com.swarthyPig.ddudu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYR1DFXmXPg-oyhIsWRStWhtj7n7g3WeY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
