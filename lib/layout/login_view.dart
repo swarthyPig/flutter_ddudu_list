@@ -1,6 +1,9 @@
 import 'package:ddudu/widgets/sign_in.dart';
 import 'package:ddudu/widgets/sign_up.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/store.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

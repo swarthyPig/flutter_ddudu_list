@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../provider/store.dart';
 import '../util/check_validate.dart';
 import '../util/show_dialog.dart';
 import '../util/user.dart';
@@ -65,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -78,8 +81,8 @@ class _LoginScreenState extends State<LoginScreen> {
               //height: MediaQuery.of(context).size.height,
             ),
           ),
-          const SizedBox(
-            height: 15,
+          Container(
+            height: ((MediaQuery.of(context).size.height - 430) * 0.1).floorToDouble(),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -97,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 50,
+                  height: 20,
                 ),
                 TextField(
                   controller: _emailController,
@@ -135,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 15,
                 ),
                 TextField(
                   controller: _passController,
@@ -251,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   children: [
                     const Text(
-                      ' 계정이 없으신가요?ㅠㅠ',
+                      ' 계정이 없으신가요?',
                       style: TextStyle(
                         color: Color(0xFF837E93),
                         fontSize: 13,

@@ -51,8 +51,8 @@ class _SingUpScreenState extends State<SingUpScreen> {
               //height: MediaQuery.of(context).size.height,
             ),
           ),
-          const SizedBox(
-            height: 15,
+          Container(
+            height: ((MediaQuery.of(context).size.height - 430) * 0.1).floorToDouble(),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -70,7 +70,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 40,
+                  height: 20,
                 ),
                 SizedBox(
                   height: 56,
@@ -110,13 +110,13 @@ class _SingUpScreenState extends State<SingUpScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 17,
+                  height: 15,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 135,
+                      width: ((MediaQuery.of(context).size.width - 30) * 0.41).floorToDouble(),
                       height: 56,
                       child: TextField(
                         controller: _passController,
@@ -177,7 +177,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: 135,
+                      width: ((MediaQuery.of(context).size.width - 30) * 0.41).floorToDouble(),
                       height: 56,
                       child: TextField(
                         controller: _repassController,

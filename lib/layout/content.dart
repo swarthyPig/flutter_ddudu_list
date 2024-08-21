@@ -1,7 +1,9 @@
 import 'package:ddudu/provider/store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 
+import '../widgets/calendar.dart';
 import '../widgets/top_tab_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -60,7 +62,9 @@ class _ContentState extends State<Content> {
                   children: <Widget>[
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
-                      child: const Center(child: Text("Monthly1"),),
+                      child: Container(
+                        child: const Calendar(),
+                      ),
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
