@@ -2,8 +2,10 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../provider/store.dart';
 import '../util/fn_calendar.dart';
 
 class Calendar extends StatefulWidget {
@@ -18,7 +20,7 @@ class _CalendarState extends State<Calendar> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
-      .toggledOn;
+      .toggledOff;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
@@ -60,6 +62,7 @@ class _CalendarState extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
+      context.read<Store>().setSelectDay(selectedDay);
       _selectedEvents.value = _getEventsForDay(selectedDay);
     }
   }

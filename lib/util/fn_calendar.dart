@@ -22,7 +22,7 @@ class Event {
 }
 
 final kToday = DateTime.now();
-final kFirstDay = DateTime.now().subtract(const Duration(days: 365 * 1));
+final kFirstDay = DateTime.now().subtract(const Duration(days: 365 * 10));
 final kLastDay = DateTime.now().add(const Duration(days: 365 * 10));
 
 final kEvents = LinkedHashMap<DateTime, List<Event>>(
