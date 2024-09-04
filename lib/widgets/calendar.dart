@@ -1,12 +1,12 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../model/event.dart';
 import '../provider/store.dart';
 import '../util/fn_calendar.dart';
+import '../util/fn_firebase.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -32,6 +32,12 @@ class _CalendarState extends State<Calendar> {
 
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+
+    var result = selectCalendarData();
+
+    result.then((val){
+      context.read<Store>().kEvents = val;
+    });
   }
 
   @override
@@ -41,7 +47,7 @@ class _CalendarState extends State<Calendar> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-    return kEvents[day] ?? [];
+    return context.read<Store>().kEvents[day] ?? [];
   }
 
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
@@ -62,7 +68,7 @@ class _CalendarState extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      context.read<Store>().setSelectDay(selectedDay);
+      context.read<Store>().pvSelectedDay = selectedDay;
       _selectedEvents.value = _getEventsForDay(selectedDay);
     }
   }
@@ -92,6 +98,7 @@ class _CalendarState extends State<Calendar> {
         Padding(
           padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
           child: TableCalendar<Event>(
+            locale: 'ko-KR',
             firstDay: kFirstDay,
             lastDay: kLastDay,
             focusedDay: _focusedDay,
@@ -100,11 +107,12 @@ class _CalendarState extends State<Calendar> {
             rangeEndDay: _rangeEnd,
             rangeSelectionMode: _rangeSelectionMode,
             eventLoader: _getEventsForDay,
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            locale: 'ko-KR',
+            startingDayOfWeek: StartingDayOfWeek.sunday,
+            pageJumpingEnabled:true,
             daysOfWeekHeight: 30,
             rowHeight: 40,
             calendarStyle: const CalendarStyle(
+              outsideDaysVisible: false,
               selectedDecoration: BoxDecoration(
                 color: Colors.blue,
                 shape: BoxShape.circle,
@@ -223,8 +231,8 @@ class _CalendarState extends State<Calendar> {
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
                                 child: ListTile(
-                                  onTap: () => print(value[index].topic),
-                                  title: Text("${value[index].topic} - ${value[index].complete}"),
+                                  onTap: () => debugPrint(value[index].topic),
+                                  title: Text("${value[index].topic} - ${value[index].completeYn}"),
                                 ),
                               );
                             },

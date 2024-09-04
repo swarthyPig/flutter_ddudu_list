@@ -1,11 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ddudu/provider/store.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 import '../widgets/calendar.dart';
 import '../widgets/top_tab_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 final fireStore = FirebaseFirestore.instance;
 
@@ -63,7 +62,7 @@ class _ContentState extends State<Content> {
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
                       child: Container(
-                        child: const Calendar(),
+                        child: Calendar(),
                       ),
                     ),
                     ConstrainedBox(

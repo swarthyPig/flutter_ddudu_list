@@ -255,19 +255,15 @@ class _SingUpScreenState extends State<SingUpScreen> {
                         var compare = CheckValidate().validateComparePassword(_passController.text, _repassController.text);
 
                         if(checkEmail != "pass"){
-                          debugPrint(checkEmail);
                           showAlertDialog(context, checkEmail);
                         }else{
                           if(checkPw1 != "pass"){
-                            debugPrint(checkPw1);
                             showAlertDialog(context, checkPw1);
                           }else{
                             if(checkPw2 != "pass"){
-                              debugPrint(checkPw2);
                               showAlertDialog(context, checkPw2);
                             }else{
                               if(compare != "pass"){
-                                debugPrint(compare);
                                 showAlertDialog(context, compare);
                               }else{
                                 userCreate(context, _emailController.text, _passController.text);

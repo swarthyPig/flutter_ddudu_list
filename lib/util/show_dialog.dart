@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ddudu/util/fn_calendar.dart';
+import 'package:ddudu/util/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../model/event.dart';
 import '../provider/store.dart';
+import 'fn_firebase.dart';
 
 showAlertDialog(context, msg){
   showDialog(
@@ -66,9 +70,9 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
 
   String topic = "";
   String description = "";
-  int year = 0;
-  int month = 0;
-  int day = 0;
+  String year = "";
+  String month = "";
+  String day = "";
   String color = "";
   String complete = "0";
 
@@ -156,6 +160,7 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                             initialDate: context.read<Store>().pvSelectedDay,
                             firstDate: kFirstDay,
                             lastDate: kLastDay,
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
                             builder: (context, child) {
                               return Theme(
                                 data: ThemeData(
@@ -176,7 +181,7 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                           });
                         },
                         onSaved: (value) {
-                          year = value! as int;
+                          year = value!;
                         },
                         decoration: const InputDecoration(
                           hintText: "년도",
@@ -199,6 +204,7 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                             initialDate: context.read<Store>().pvSelectedDay,
                             firstDate: kFirstDay,
                             lastDate: kLastDay,
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
                             builder: (context, child) {
                               return Theme(
                                 data: ThemeData(
@@ -219,7 +225,7 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                           });
                         },
                         onSaved: (value) {
-                          month = value! as int;
+                          month = value!;
                         },
                         decoration: const InputDecoration(
                           hintText: "월",
@@ -243,6 +249,7 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                             initialDate: context.read<Store>().pvSelectedDay,
                             firstDate: kFirstDay,
                             lastDate: kLastDay,
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
                             builder: (context, child) {
                               return Theme(
                                 data: ThemeData(
@@ -263,7 +270,7 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                           });
                         },
                         onSaved: (value) {
-                          day = value! as int;
+                          day = value!;
                         },
                         decoration: const InputDecoration(
                           hintText: "일",
@@ -330,7 +337,38 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    //Event model = new Event(topic, description, year, month, day, currentColor.toHexString(), complete)
+
+                    var result = createCalendarData(
+                        Event(
+                          topic: topic,
+                          description: description,
+                          year: year,
+                          month: month,
+                          day: day,
+                          color: "0x${currentColor.toHexString()}",
+                          completeYn: complete,
+                          insId: getUserId().toString(),
+                          insDt: Timestamp.now(),
+                          fullDate: Timestamp.fromDate(DateTime(int.parse(year), int.parse(month), int.parse(day))),
+                        )
+                    );
+
+                    result.catchError((onError) {
+                      debugPrint("CreteData Error 발생 : $onError");
+                    }).then((val){
+                      debugPrint("CreteData 성공");
+
+                      var result = selectCalendarData();
+
+                      result.then((val){
+                        context.read<Store>().kEvents = val;
+
+                        Navigator.of(context).pop();
+                      });
+
+                    }).whenComplete(() {
+                      debugPrint("CreteData whenComplete 성공");
+                    });
                   }
                 },
                 child: const Text('확인')),

@@ -222,11 +222,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         var checkPw = CheckValidate().validatePassword(_passController.text);
 
                         if(checkEmail != "pass"){
-                          debugPrint(checkEmail);
                           showAlertDialog(context, checkEmail);
                         }else{
                           if(checkPw != "pass"){
-                            debugPrint(checkPw);
                             showAlertDialog(context, checkPw);
                           }else{
                             userLogin(context, _emailController.text, _passController.text);

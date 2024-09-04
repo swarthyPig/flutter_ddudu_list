@@ -17,7 +17,6 @@ userCreate(context, id, pw) async {
         MaterialPageRoute(builder: (context) =>  const LoginView())
     );
   }catch(e){
-    print(e);
     showAlertDialog(context, "회원가입에 실패했습니다.\n\n이미 등록된 이메일 입니다.");
   }
 }
@@ -33,7 +32,6 @@ userLogin(context, id, pw) async {
         MaterialPageRoute(builder: (context) => const MyApp())
     );
   }catch(e){
-    print(e);
     showAlertDialog(context, "로그인에 실패했습니다\n\n아이디 또는 비밀번호를 다시 확인해주세요.");
   }
 
@@ -46,4 +44,8 @@ userLogout(context) async {
   Navigator.push(context,
       MaterialPageRoute(builder: (context) =>  const LoginView())
   );
+}
+
+getUserId(){
+  return auth.currentUser?.uid;
 }
