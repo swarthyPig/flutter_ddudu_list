@@ -86,7 +86,7 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
 
   await showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: true,
     builder: (context) {
       return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
 
@@ -96,11 +96,11 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
         }
 
         return AlertDialog(
+          contentPadding: EdgeInsets.zero,
           shape:  RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
-          actionsPadding: const EdgeInsets.all(15),
           title: const Text('일정등록', style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -113,294 +113,316 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                TextFormField(
-                  maxLength: 20,
-                  keyboardType: TextInputType.text,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return '일정명을 입력해주세요.';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    topic = value!;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: "일정명",
-                    hintText: "일정명을 입력해주세요.",
-                    //counterText: ''
+                Container(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 20),
+                  child: TextFormField(
+                    maxLength: 20,
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '일정명을 입력해주세요.';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      topic = value!;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: "일정명",
+                      hintText: "일정명을 입력해주세요.",
+                      //counterText: ''
+                    ),
                   ),
                 ),
-                const SizedBox(
-                  height: 15,
-                ),
-                TextFormField(
-                  maxLength: 100,
-                  minLines: 1,
-                  maxLines: 5,
-                  keyboardType: TextInputType.text,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return '일정내용을 입력해주세요.';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    description = value!;
-                  },
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                    labelText: "일정내용",
-                    hintText: "일정내용을 입력해주세요.",
-                    border: OutlineInputBorder(),
-                    alignLabelWithHint: true,
-                    //counterText: ''
+                Container(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 20),
+                  child: TextFormField(
+                    maxLength: 100,
+                    minLines: 1,
+                    maxLines: 5,
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return '일정내용을 입력해주세요.';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      description = value!;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: "일정내용",
+                      hintText: "일정내용을 입력해주세요.",
+                      //counterText: ''
+                    ),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: (MediaQuery.of(context).size.width - 180) * 0.3,
-                      child: TextFormField(
-                        readOnly: true,
-                        controller: _yearController,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return '년도';
-                          }
-                          return null;
-                        },
-                        onTap: () async {
-                          await showDatePicker(
-                            context: context,
-                            initialDate: context.read<Store>().pvSelectedDay,
-                            firstDate: kFirstDay,
-                            lastDate: kLastDay,
-                            initialEntryMode: DatePickerEntryMode.calendarOnly,
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData(
-                                  appBarTheme: const AppBarTheme(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.amber,
-                                  ),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          ).then((selectedDate) {
-                            if (selectedDate != null) {
-                              _yearController.text = DateFormat('yyyy').format(selectedDate);
-                              _monthController.text = DateFormat('MM').format(selectedDate);
-                              _dayController.text = DateFormat('dd').format(selectedDate);
+                Container(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: (MediaQuery.of(context).size.width - 180) * 0.3,
+                        child: TextFormField(
+                          readOnly: true,
+                          controller: _yearController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return '년도';
                             }
-                          });
-                        },
-                        onSaved: (value) {
-                          year = value!;
-                        },
-                        decoration: const InputDecoration(
-                          hintText: "년도",
-                        ),
-                      ),
-                    ),SizedBox(
-                      width: (MediaQuery.of(context).size.width - 180) * 0.3,
-                      child: TextFormField(
-                        readOnly: true,
-                        controller: _monthController,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return '월';
-                          }
-                          return null;
-                        },
-                        onTap: () async {
-                          await showDatePicker(
-                            context: context,
-                            initialDate: context.read<Store>().pvSelectedDay,
-                            firstDate: kFirstDay,
-                            lastDate: kLastDay,
-                            initialEntryMode: DatePickerEntryMode.calendarOnly,
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData(
-                                  appBarTheme: const AppBarTheme(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.amber,
+                            return null;
+                          },
+                          onTap: () async {
+                            await showDatePicker(
+                              context: context,
+                              initialDate: context.read<Store>().pvSelectedDay,
+                              firstDate: kFirstDay,
+                              lastDate: kLastDay,
+                              initialEntryMode: DatePickerEntryMode.calendarOnly,
+                              builder: (context, child) {
+                                return Theme(
+                                  data: ThemeData(
+                                    appBarTheme: const AppBarTheme(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.amber,
+                                    ),
                                   ),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          ).then((selectedDate) {
-                            if (selectedDate != null) {
-                              _yearController.text = DateFormat('yyyy').format(selectedDate);
-                              _monthController.text = DateFormat('MM').format(selectedDate);
-                              _dayController.text = DateFormat('dd').format(selectedDate);
-                            }
-                          });
-                        },
-                        onSaved: (value) {
-                          month = value!;
-                        },
-                        decoration: const InputDecoration(
-                          hintText: "월",
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: (MediaQuery.of(context).size.width - 180) * 0.3,
-                      child: TextFormField(
-                        readOnly: true,
-                        controller: _dayController,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return '일';
-                          }
-                          return null;
-                        },
-                        onTap: () async {
-                          await showDatePicker(
-                            context: context,
-                            initialDate: context.read<Store>().pvSelectedDay,
-                            firstDate: kFirstDay,
-                            lastDate: kLastDay,
-                            initialEntryMode: DatePickerEntryMode.calendarOnly,
-                            builder: (context, child) {
-                              return Theme(
-                                data: ThemeData(
-                                  appBarTheme: const AppBarTheme(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.amber,
-                                  ),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          ).then((selectedDate) {
-                            if (selectedDate != null) {
-                              _yearController.text = DateFormat('yyyy').format(selectedDate);
-                              _monthController.text = DateFormat('MM').format(selectedDate);
-                              _dayController.text = DateFormat('dd').format(selectedDate);
-                            }
-                          });
-                        },
-                        onSaved: (value) {
-                          day = value!;
-                        },
-                        decoration: const InputDecoration(
-                          hintText: "일",
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-                      child: Container(
-                        alignment: Alignment.centerLeft,
-                        child: const Text("색상", style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 15,
-                          fontFamily: 'Raleway',
-                        )),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 35,
-                          height: 35,
-                          margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: currentColor,
+                                  child: child!,
+                                );
+                              },
+                            ).then((selectedDate) {
+                              if (selectedDate != null) {
+                                _yearController.text = DateFormat('yyyy').format(selectedDate);
+                                _monthController.text = DateFormat('MM').format(selectedDate);
+                                _dayController.text = DateFormat('dd').format(selectedDate);
+                              }
+                            });
+                          },
+                          onSaved: (value) {
+                            year = value!;
+                          },
+                          decoration: const InputDecoration(
+                            hintText: "년도",
                           ),
                         ),
-                        Container(
-                            width: 100,
-                            height: 35,
-                            margin: const EdgeInsets.fromLTRB(20, 10, 0, 0),
-                            child: ElevatedButton(
-                              onPressed: (){
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: const Text('색상을 선택하세요.'),
-                                      content: SingleChildScrollView(
-                                        child: BlockPicker(
-                                          pickerColor: pickerColor,
-                                          onColorChanged: changeColor,
-                                        ),
-                                      ),
-                                      actions: <Widget>[
-                                        ElevatedButton(
-                                          child: const Text('색 선택'),
-                                          onPressed: () {
-                                            setState(() => currentColor = pickerColor);
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
+                      ),SizedBox(
+                        width: (MediaQuery.of(context).size.width - 180) * 0.3,
+                        child: TextFormField(
+                          readOnly: true,
+                          controller: _monthController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return '월';
+                            }
+                            return null;
+                          },
+                          onTap: () async {
+                            await showDatePicker(
+                              context: context,
+                              initialDate: context.read<Store>().pvSelectedDay,
+                              firstDate: kFirstDay,
+                              lastDate: kLastDay,
+                              initialEntryMode: DatePickerEntryMode.calendarOnly,
+                              builder: (context, child) {
+                                return Theme(
+                                  data: ThemeData(
+                                    appBarTheme: const AppBarTheme(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.amber,
+                                    ),
+                                  ),
+                                  child: child!,
                                 );
+                              },
+                            ).then((selectedDate) {
+                              if (selectedDate != null) {
+                                _yearController.text = DateFormat('yyyy').format(selectedDate);
+                                _monthController.text = DateFormat('MM').format(selectedDate);
+                                _dayController.text = DateFormat('dd').format(selectedDate);
                               }
-                              , child: const Text('색상선택')
+                            });
+                          },
+                          onSaved: (value) {
+                            month = value!;
+                          },
+                          decoration: const InputDecoration(
+                            hintText: "월",
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: (MediaQuery.of(context).size.width - 180) * 0.3,
+                        child: TextFormField(
+                          readOnly: true,
+                          controller: _dayController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return '일';
+                            }
+                            return null;
+                          },
+                          onTap: () async {
+                            await showDatePicker(
+                              context: context,
+                              initialDate: context.read<Store>().pvSelectedDay,
+                              firstDate: kFirstDay,
+                              lastDate: kLastDay,
+                              initialEntryMode: DatePickerEntryMode.calendarOnly,
+                              builder: (context, child) {
+                                return Theme(
+                                  data: ThemeData(
+                                    appBarTheme: const AppBarTheme(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.amber,
+                                    ),
+                                  ),
+                                  child: child!,
+                                );
+                              },
+                            ).then((selectedDate) {
+                              if (selectedDate != null) {
+                                _yearController.text = DateFormat('yyyy').format(selectedDate);
+                                _monthController.text = DateFormat('MM').format(selectedDate);
+                                _dayController.text = DateFormat('dd').format(selectedDate);
+                              }
+                            });
+                          },
+                          onSaved: (value) {
+                            day = value!;
+                          },
+                          decoration: const InputDecoration(
+                            hintText: "일",
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text("색상", style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 15,
+                            fontFamily: 'Raleway',
+                          )),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 35,
+                            height: 35,
+                            margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: currentColor,
+                            ),
+                          ),
+                          Container(
+                              width: 100,
+                              height: 35,
+                              margin: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+                              child: ElevatedButton(
+                                onPressed: (){
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text('색상을 선택하세요.'),
+                                        content: SingleChildScrollView(
+                                          child: BlockPicker(
+                                            pickerColor: pickerColor,
+                                            onColorChanged: changeColor,
+                                          ),
+                                        ),
+                                        actions: <Widget>[
+                                          ElevatedButton(
+                                            child: const Text('색 선택'),
+                                            onPressed: () {
+                                              setState(() => currentColor = pickerColor);
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                                , child: const Text('색상선택')
+                              )
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: (){
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+
+                      final id = FirebaseFirestore.instance.collection('party').doc().id;
+                      var result = createCalendarData(
+                          Event(
+                            id: id,
+                            topic: topic,
+                            description: description,
+                            year: year,
+                            month: month,
+                            day: day,
+                            color: "0x${currentColor.toHexString()}",
+                            completeYn: complete,
+                            insId: getUserId().toString(),
+                            insDt: Timestamp.now(),
+                            fullDate: Timestamp.fromDate(DateTime(int.parse(year), int.parse(month), int.parse(day))),
+                          )
+                      );
+
+                      result.catchError((onError) {
+                        debugPrint("CreteData Error : $onError");
+                      }).then((val){
+                        debugPrint("CreteData");
+                        context.read<Store>().chgKEvents(context.read<Store>().pvSelectedDay);
+                      }).whenComplete(() {
+                        debugPrint("CreteData whenComplete");
+                        Navigator.of(context).pop();
+                      });
+                    }
+                  },
+                  child: InkWell(
+                    child: Container(
+                        height: 45,
+                        decoration: const BoxDecoration(
+                          color: Color(0xff5a95ff),
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10.0),
+                              bottomRight: Radius.circular(10.0)),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("등록",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontFamily: 'Raleway'
+                              ),
                             )
+                          ],
                         )
-                      ],
                     ),
-                  ],
-                )
+                  ),
+                ),
               ],
             ),
           ),
-          actions: [
-            ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('취소')
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-
-                    final id = FirebaseFirestore.instance.collection('party').doc().id;
-                    var result = createCalendarData(
-                        Event(
-                          id: id,
-                          topic: topic,
-                          description: description,
-                          year: year,
-                          month: month,
-                          day: day,
-                          color: "0x${currentColor.toHexString()}",
-                          completeYn: complete,
-                          insId: getUserId().toString(),
-                          insDt: Timestamp.now(),
-                          fullDate: Timestamp.fromDate(DateTime(int.parse(year), int.parse(month), int.parse(day))),
-                        )
-                    );
-
-                    result.catchError((onError) {
-                      debugPrint("CreteData Error : $onError");
-                    }).then((val){
-                      debugPrint("CreteData");
-                      context.read<Store>().chgKEvents(context.read<Store>().pvSelectedDay);
-                    }).whenComplete(() {
-                      debugPrint("CreteData whenComplete");
-                      Navigator.of(context).pop();
-                    });
-                  }
-                },
-                child: const Text('확인')),
-          ],
         );
       });
     }
