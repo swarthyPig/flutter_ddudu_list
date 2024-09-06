@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Event {
+  final String id;
   final String topic;
   final String description;
   final String year;
@@ -13,7 +14,8 @@ class Event {
   final Timestamp fullDate;
 
   Event({
-    required this.topic
+    required this.id
+    , required this.topic
     , required this.description
     , required this.year
     , required this.month
@@ -26,6 +28,7 @@ class Event {
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
+      id : json["id"],
       topic : json["topic"],
       description: json["description"],
       year: json["year"],
@@ -40,6 +43,7 @@ class Event {
   }
   Map<String, dynamic> toJson() {
     return {
+      "id": id,
       "topic": topic,
       "description": description,
       "year": year,

@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ddudu/util/fn_calendar.dart';
 import 'package:ddudu/util/user.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -92,6 +96,11 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
         }
 
         return AlertDialog(
+          shape:  RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          actionsPadding: const EdgeInsets.all(15),
           title: const Text('일정등록', style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -122,8 +131,13 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                     //counterText: ''
                   ),
                 ),
+                const SizedBox(
+                  height: 15,
+                ),
                 TextFormField(
                   maxLength: 100,
+                  minLines: 1,
+                  maxLines: 5,
                   keyboardType: TextInputType.text,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -135,8 +149,11 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                     description = value!;
                   },
                   decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
                     labelText: "일정내용",
                     hintText: "일정내용을 입력해주세요.",
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
                     //counterText: ''
                   ),
                 ),
@@ -279,50 +296,66 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                     )
                   ],
                 ),
-                Row(
+                Column(
                   children: [
                     Container(
-                      width: 35,
-                      height: 35,
+                      alignment: Alignment.centerLeft,
                       margin: const EdgeInsets.fromLTRB(0, 30, 0, 0),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: currentColor,
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        child: const Text("색상", style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 15,
+                          fontFamily: 'Raleway',
+                        )),
                       ),
                     ),
-                    Container(
-                        width: 100,
-                        height: 35,
-                        margin: const EdgeInsets.fromLTRB(20, 30, 0, 0),
-                        child: ElevatedButton(
-                          onPressed: (){
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('색상을 선택하세요.'),
-                                  content: SingleChildScrollView(
-                                    child: BlockPicker(
-                                      pickerColor: pickerColor,
-                                      onColorChanged: changeColor,
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    ElevatedButton(
-                                      child: const Text('색 선택'),
-                                      onPressed: () {
-                                        setState(() => currentColor = pickerColor);
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
+                    Row(
+                      children: [
+                        Container(
+                          width: 35,
+                          height: 35,
+                          margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundColor: currentColor,
+                          ),
+                        ),
+                        Container(
+                            width: 100,
+                            height: 35,
+                            margin: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+                            child: ElevatedButton(
+                              onPressed: (){
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('색상을 선택하세요.'),
+                                      content: SingleChildScrollView(
+                                        child: BlockPicker(
+                                          pickerColor: pickerColor,
+                                          onColorChanged: changeColor,
+                                        ),
+                                      ),
+                                      actions: <Widget>[
+                                        ElevatedButton(
+                                          child: const Text('색 선택'),
+                                          onPressed: () {
+                                            setState(() => currentColor = pickerColor);
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 );
-                              },
-                            );
-                          }
-                          , child: const Text('색상선택')
+                              }
+                              , child: const Text('색상선택')
+                            )
                         )
-                    )
+                      ],
+                    ),
                   ],
                 )
               ],
@@ -338,8 +371,10 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
 
+                    final id = FirebaseFirestore.instance.collection('party').doc().id;
                     var result = createCalendarData(
                         Event(
+                          id: id,
                           topic: topic,
                           description: description,
                           year: year,
@@ -354,20 +389,13 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
                     );
 
                     result.catchError((onError) {
-                      debugPrint("CreteData Error 발생 : $onError");
+                      debugPrint("CreteData Error : $onError");
                     }).then((val){
-                      debugPrint("CreteData 성공");
-
-                      var result = selectCalendarData();
-
-                      result.then((val){
-                        context.read<Store>().kEvents = val;
-
-                        Navigator.of(context).pop();
-                      });
-
+                      debugPrint("CreteData");
+                      context.read<Store>().chgKEvents(context.read<Store>().pvSelectedDay);
                     }).whenComplete(() {
-                      debugPrint("CreteData whenComplete 성공");
+                      debugPrint("CreteData whenComplete");
+                      Navigator.of(context).pop();
                     });
                   }
                 },
@@ -376,5 +404,182 @@ Future<dynamic> showCreateDialog(BuildContext context, pvSelectedDay) async {
         );
       });
     }
+  );
+}
+
+showCalendarDetailDialog(BuildContext context, Event data){
+  debugPrint(data.toString());
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) => AlertDialog(
+      contentPadding: EdgeInsets.zero,
+      alignment: Alignment.topCenter,
+      shape:  RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 8,
+                  backgroundColor: Color(int.parse(data.color)),
+                ),
+                const SizedBox(width: 12,),
+                Text(data.topic, style: TextStyle(
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w600,
+                    decoration: (data.completeYn == '0')
+                      ? TextDecoration.none
+                      : TextDecoration.lineThrough,
+                    ),
+                ),
+                const SizedBox(width: 10,),
+                const Expanded(flex: 1, child: Divider(thickness: 1,color: Colors.grey),),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(30, 0, 30, 20),
+            child: Row(
+              children: [
+                const FaIcon(
+                  FontAwesomeIcons.calendarMinus,
+                  color: Colors.grey,
+                  size: 20,
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                Text("${data.month}월 ${data.day}일",
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 13,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w500,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+            child: Row(
+              children: [
+                Text(data.description,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 13,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(10, 0, 20, 10),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: (){
+                    String flag = "";
+
+                    if(data.completeYn == "0"){
+                      flag = "1";
+                    }else{
+                      flag = "0";
+                    }
+
+                    var result = updateCalendarComplete(data.id, flag);
+
+                    result.catchError((onError) {
+                      debugPrint("UpdateData Error : $onError");
+                    }).then((val){
+                      debugPrint("UpdateData");
+                      context.read<Store>().chgKEvents(context.read<Store>().pvSelectedDay);
+                    }).whenComplete(() {
+                      Navigator.of(context).pop();
+                      debugPrint("UpdateData whenComplete");
+                    });
+                  },
+                  icon: FaIcon(
+                    (data.completeYn == '0')
+                        ? FontAwesomeIcons.circleCheck
+                        : FontAwesomeIcons.circleCheck,
+                  ),
+                  color: (data.completeYn == '0')
+                      ? Colors.grey
+                      : Colors.green,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                const Text("완료",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 13,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+              var result = deleteCalendarComplete(data.id);
+
+              result.catchError((onError) {
+                debugPrint("deleteData Error : $onError");
+              }).then((val){
+                debugPrint("deleteData");
+                context.read<Store>().chgKEvents(context.read<Store>().pvSelectedDay);
+              }).whenComplete(() {
+                Navigator.of(context).pop();
+                debugPrint("deleteData whenComplete");
+              });
+            },
+            child: InkWell(
+              child: Container(
+                  height: 45,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10.0),
+                        bottomRight: Radius.circular(10.0)),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.trashCan,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Text("삭제",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontFamily: 'Raleway'
+                        ),
+                      )
+                    ],
+                  )
+              ),
+            ),
+          ),
+        ],
+      )
+    ),
   );
 }

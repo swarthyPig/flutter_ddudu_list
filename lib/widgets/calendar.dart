@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -7,6 +10,7 @@ import '../model/event.dart';
 import '../provider/store.dart';
 import '../util/fn_calendar.dart';
 import '../util/fn_firebase.dart';
+import '../util/show_dialog.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -17,7 +21,7 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
 
-  late final ValueNotifier<List<Event>> _selectedEvents;
+  late ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff;
@@ -26,28 +30,35 @@ class _CalendarState extends State<Calendar> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
+  LinkedHashMap<DateTime, List<Event>>? eventData = LinkedHashMap<DateTime, List<Event>>();
+
   @override
   void initState() {
     super.initState();
+    debugPrint("initState");
 
     _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    context.read<Store>().chgKEvents(_focusedDay);
+  }
 
-    var result = selectCalendarData();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint("didChangeDependencies");
 
-    result.then((val){
-      context.read<Store>().kEvents = val;
-    });
+    eventData = context.watch<Store>().kEvents;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_focusedDay));
   }
 
   @override
   void dispose() {
+    debugPrint("dispose");
     _selectedEvents.dispose();
     super.dispose();
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-    return context.read<Store>().kEvents[day] ?? [];
+    return eventData?[day] ?? [];
   }
 
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
@@ -68,7 +79,7 @@ class _CalendarState extends State<Calendar> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      context.read<Store>().pvSelectedDay = selectedDay;
+      context.read<Store>().chgPvSelectedDay(selectedDay);
       _selectedEvents.value = _getEventsForDay(selectedDay);
     }
   }
@@ -139,7 +150,11 @@ class _CalendarState extends State<Calendar> {
                 });
               }
             },
-            onPageChanged: (focusedDay) => _focusedDay = focusedDay,
+            onPageChanged: (focusedDay) {
+              debugPrint("onPageChanged");
+              _focusedDay = focusedDay;
+              context.read<Store>().chgKEvents(focusedDay);
+            },
             onRangeSelected: _onRangeSelected,
             calendarBuilders: CalendarBuilders(
               dowBuilder: (context, day) {
@@ -188,14 +203,16 @@ class _CalendarState extends State<Calendar> {
                     }).toList(),
                   );
                 }
+                return null;
               },
             ),
           ),
         ),
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 8),
         Expanded(
           child: Container(
-            color: const Color(0xfff7fafc),
+            //color: const Color(0xfff7fafc),
+            color: const Color(0xffe4eef5),
             child: Container(
               padding: const EdgeInsets.fromLTRB(30, 0, 30, 10),
               child: Column(
@@ -207,9 +224,9 @@ class _CalendarState extends State<Calendar> {
                       children: [
                         Text(DateFormat("M월 d일").format(_focusedDay), style: const TextStyle(
                             color: Colors.black,
-                            fontSize: 25,
+                            fontSize: 23,
                             fontFamily: 'Raleway',
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                         )),
                       ],
                     ),
@@ -226,13 +243,95 @@ class _CalendarState extends State<Calendar> {
                                   horizontal: 12.0,
                                   vertical: 4.0,
                                 ),
+                                padding: const EdgeInsets.fromLTRB(10, 1, 10, 1),
                                 decoration: BoxDecoration(
-                                  border: Border.all(),
-                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.8),
+                                      spreadRadius: 0,
+                                      blurRadius: 8,
+                                      offset: const Offset(2,4), // changes position of shadow
+
+                                    ),
+                                  ],
                                 ),
-                                child: ListTile(
-                                  onTap: () => debugPrint(value[index].topic),
-                                  title: Text("${value[index].topic} - ${value[index].completeYn}"),
+                                child: Row(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: (){
+                                            String flag = "";
+
+                                            if(value[index].completeYn == "0"){
+                                              flag = "1";
+                                            }else{
+                                              flag = "0";
+                                            }
+
+                                            var result = updateCalendarComplete(value[index].id, flag);
+
+                                            result.catchError((onError) {
+                                              debugPrint("UpdateData Error : $onError");
+                                            }).then((val){
+                                              debugPrint("UpdateData");
+                                              context.read<Store>().chgKEvents(context.read<Store>().pvSelectedDay);
+                                            }).whenComplete(() {
+                                              debugPrint("UpdateData whenComplete");
+                                            });
+                                          },
+                                          icon: FaIcon(
+                                            (value[index].completeYn == '0')
+                                                ? FontAwesomeIcons.circleCheck
+                                                : FontAwesomeIcons.circleCheck,
+                                          ),
+                                          color: (value[index].completeYn == '0')
+                                              ? Colors.grey
+                                              : Colors.green,
+                                        ),
+                                      ],
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: (){ showCalendarDetailDialog(context, value[index]); },
+                                            child: Text(value[index].topic, style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                              fontFamily: 'Raleway',
+                                              fontWeight: FontWeight.w500,
+                                              decoration: (value[index].completeYn == '0')
+                                                ? TextDecoration.none
+                                                : TextDecoration.lineThrough,
+                                              )
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: (){
+                                              var result = deleteCalendarComplete(value[index].id);
+
+                                              result.catchError((onError) {
+                                                debugPrint("deleteData Error : $onError");
+                                              }).then((val){
+                                                debugPrint("deleteData");
+                                                context.read<Store>().chgKEvents(context.read<Store>().pvSelectedDay);
+                                              }).whenComplete(() {
+                                                debugPrint("deleteData whenComplete");
+                                              });
+                                            },
+                                            icon: const FaIcon(FontAwesomeIcons.trashCan),
+                                            iconSize: 20,
+                                            color:Colors.red,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               );
                             },

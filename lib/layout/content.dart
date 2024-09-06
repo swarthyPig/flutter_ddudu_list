@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/calendar.dart';
+import '../widgets/daily.dart';
 import '../widgets/top_tab_bar.dart';
 
 final fireStore = FirebaseFirestore.instance;
@@ -61,13 +62,11 @@ class _ContentState extends State<Content> {
                   children: <Widget>[
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
-                      child: Container(
-                        child: Calendar(),
-                      ),
+                      child: const Calendar(),
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
-                      child: const Center(child: Text("Daily2"),),
+                      child: const Daily(),
                     ),
                   ],
                 ),

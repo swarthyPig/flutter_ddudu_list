@@ -43,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // 재 로그인 해달라는 modal을 띄우고 로그아웃처리 함(회원가입하면 자동 세션이 생김)
 
       // initState에서는 context를 사용못함 그래서 Future.delayed를 통해 해결
+      // didChangeDependencies를 사용해서 처리해도 무관함.
       Future.delayed(
         Duration.zero,
         () async {

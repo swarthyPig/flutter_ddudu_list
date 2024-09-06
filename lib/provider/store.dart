@@ -6,17 +6,16 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../model/event.dart';
 import '../util/fn_calendar.dart';
+import '../util/fn_firebase.dart';
 
 class Store with ChangeNotifier {
 
   var bottomNavCurrTab = 0; // 하단 바
   var topCurrTab = 0; // 상단 메뉴바
 
-  DateTime? _pvSelectedDay = DateTime.now();
-  DateTime? get pvSelectedDay => _pvSelectedDay;
+  DateTime pvSelectedDay = DateTime.now();
 
-  LinkedHashMap<DateTime, List<Event>> _kEvents = LinkedHashMap<DateTime, List<Event>>();
-  LinkedHashMap<DateTime, List<Event>> get kEvents => _kEvents;
+  LinkedHashMap<DateTime, List<Event>> kEvents = LinkedHashMap<DateTime, List<Event>>();
 
   chgBottomTabNum(int num) {
     bottomNavCurrTab = num;
@@ -28,17 +27,24 @@ class Store with ChangeNotifier {
     notifyListeners();
   }
 
-  set pvSelectedDay(DateTime? selectedDay){
-    _pvSelectedDay = selectedDay;
+  chgPvSelectedDay(DateTime selectedDay){
+    pvSelectedDay = selectedDay;
     notifyListeners();
   }
 
-  set kEvents(LinkedHashMap<DateTime, List<Event>> data) {
-    _kEvents = LinkedHashMap<DateTime, List<Event>>(
-      equals: isSameDay,
-      hashCode: getHashCode,
-    )..addAll(data);
+  chgKEvents(DateTime currDay) async{
 
-    notifyListeners();
+    var result = selectCalendarData(currDay);
+
+    result.then((val) {
+      kEvents = LinkedHashMap<DateTime, List<Event>>(
+        equals: isSameDay,
+        hashCode: getHashCode,
+      )..addAll(val);
+
+      debugPrint("=======chgKEvents=======");
+
+      notifyListeners();
+    });
   }
 }
