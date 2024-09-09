@@ -45,7 +45,7 @@ Future<LinkedHashMap<DateTime, List<Event>>> selectCalendarData(DateTime currDay
 
     finalData.addAll(groupBy(eventsList, (Event obj) => DateTime.parse(obj.fullDate.toDate().toString())));
 
-    return finalData;
+    return Future.value(finalData);
 
   }catch(e){
     debugPrint('일정 가져오는 중 오류 발생: $e');

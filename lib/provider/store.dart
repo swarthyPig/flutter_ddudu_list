@@ -42,8 +42,6 @@ class Store with ChangeNotifier {
         hashCode: getHashCode,
       )..addAll(val);
 
-      debugPrint("=======chgKEvents=======");
-
       notifyListeners();
     });
   }

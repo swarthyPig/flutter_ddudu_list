@@ -28,9 +28,7 @@ userLogin(context, id, pw) async {
       password: pw,
     );
 
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const MyApp())
-    );
+    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }catch(e){
     showAlertDialog(context, "로그인에 실패했습니다\n\n아이디 또는 비밀번호를 다시 확인해주세요.");
   }

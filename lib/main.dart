@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,8 @@ import 'layout/login_view.dart';
 import 'model/style.dart' as style;
 
 final auth = FirebaseAuth.instance;
+
+DateTime? currentBackPressTime;
 
 void main() async {
 
@@ -57,9 +60,16 @@ class MyApp extends StatelessWidget {
         supportedLocales: const [
           Locale('ko','KR'),
         ],
-        theme: auth.currentUser?.uid == null ? ThemeData.light() : style.theme,
-        darkTheme: ThemeData.dark(),
-        home: auth.currentUser?.uid == null ? const LoginView() : const Home(),
+        initialRoute: '/',
+        routes: {
+          "/home": (context) => const Home(),
+        },
+        theme: style.theme, // Light mode 일때
+        darkTheme: style.theme, // Dark mode 일때 적용 할 테마
+        home: MediaQuery(
+          data:MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          child: auth.currentUser?.uid == null ? const LoginView() : const Home(),
+        )
       ),
     );
   }
@@ -86,9 +96,60 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar( centerTitle: true, title: const Text('Task'),),
-      body: const Content(),
+      body : const WillPopScope(
+        onWillPop: onWillPop,
+        child: Content(),
+      ),
+      // ios에서 이슈가있음
+      /*body: PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) async {
+          await onPopScope();
+        },
+        child: const Content(),
+      ),*/
       bottomNavigationBar: const Footer(),
     );
   }
 }
 
+Future<bool> onWillPop(){
+
+  DateTime now = DateTime.now();
+
+  if(currentBackPressTime == null || now.difference(currentBackPressTime!)
+      > const Duration(seconds: 2))
+  {
+
+    currentBackPressTime = now;
+    const msg = "'뒤로'버튼을 한 번 더 누르면 종료됩니다.";
+
+    Fluttertoast.showToast(msg: msg);
+    return Future.value(false);
+
+  }
+
+  return Future.value(true);
+
+}
+
+// ios에서 이슈가있음
+/*Future<bool> onPopScope(){
+
+  DateTime now = DateTime.now();
+
+  if(currentBackPressTime == null || now.difference(currentBackPressTime!)
+      > const Duration(seconds: 2))
+  {
+
+    currentBackPressTime = now;
+    const msg = "'뒤로'버튼을 한 번 더 누르면 종료됩니다.";
+
+    Fluttertoast.showToast(msg: msg);
+    return Future.value(false);
+
+  }
+
+  return Future.value(true);
+
+}*/

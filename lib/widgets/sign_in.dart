@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
-import '../provider/store.dart';
+import '../layout/content.dart';
 import '../util/check_validate.dart';
 import '../util/show_dialog.dart';
 import '../util/user.dart';
@@ -75,10 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
           Padding(
             padding: const EdgeInsets.only(left: 15, top: 15),
             child: Image.asset(
-              "image/vector-1.png",
-              width: 413,
+              "assets/image/vector-1.png",
+              //width: 413,
               height: 430,
-              //width: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width,
               //height: MediaQuery.of(context).size.height,
             ),
           ),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -23,20 +22,16 @@ class _DailyState extends State<Daily> {
   List<Event> data = List.empty();
 
   @override
-  void initState() {
-    super.initState();
-
-    selectDay = context.read<Store>().pvSelectedDay;
-    data = context.read<Store>().kEvents[selectDay] ?? [];
-  }
-
-  @override
   Widget build(BuildContext context) {
+
+    selectDay = context.watch<Store>().pvSelectedDay;
+    data = context.watch<Store>().kEvents[selectDay] ?? [];
 
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.fromLTRB(45, 30, 55, 30),
+          height: (MediaQuery.of(context).size.height) * 0.1,
+          padding: const EdgeInsets.fromLTRB(45, 30, 55, 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -54,7 +49,6 @@ class _DailyState extends State<Daily> {
             ],
           ),
         ),
-        const SizedBox(height: 8),
         Expanded(
           child: Container(
             color: const Color(0xffe4eef5),
@@ -63,6 +57,7 @@ class _DailyState extends State<Daily> {
               child: ListView.builder(
                 itemCount: data.length,
                 controller: scroll,
+                scrollDirection: Axis.vertical,
                 itemBuilder: (context, index){
                   return Container(
                     margin: const EdgeInsets.symmetric(

@@ -45,9 +45,9 @@ class _SingUpScreenState extends State<SingUpScreen> {
             padding: const EdgeInsets.only(top: 0),
             child: Image.asset(
               "image/vector-2.png",
-              width: 413,
+              //width: 413,
               height: 450,
-              //width: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width,
               //height: MediaQuery.of(context).size.height,
             ),
           ),

@@ -21,6 +21,8 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
 
+  var scroll = ScrollController();
+
   late ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -37,17 +39,10 @@ class _CalendarState extends State<Calendar> {
     super.initState();
     debugPrint("initState");
 
-    _selectedDay = _focusedDay;
-    context.read<Store>().chgKEvents(_focusedDay);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    debugPrint("didChangeDependencies");
-
-    eventData = context.watch<Store>().kEvents;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_focusedDay));
+    //_selectedDay = _focusedDay;
+    //context.read<Store>().chgKEvents(_focusedDay);
+    _selectedDay = context.read<Store>().pvSelectedDay;
+    context.read<Store>().chgKEvents(_selectedDay!);
   }
 
   @override
@@ -78,7 +73,6 @@ class _CalendarState extends State<Calendar> {
         _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
-
       context.read<Store>().chgPvSelectedDay(selectedDay);
       _selectedEvents.value = _getEventsForDay(selectedDay);
     }
@@ -104,6 +98,10 @@ class _CalendarState extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
+
+    eventData = context.watch<Store>().kEvents;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+
     return Column(
       children: [
         Padding(
@@ -121,7 +119,7 @@ class _CalendarState extends State<Calendar> {
             startingDayOfWeek: StartingDayOfWeek.sunday,
             pageJumpingEnabled:true,
             daysOfWeekHeight: 30,
-            rowHeight: 40,
+            rowHeight: (MediaQuery.of(context).size.height) * 0.06,
             calendarStyle: const CalendarStyle(
               outsideDaysVisible: false,
               selectedDecoration: BoxDecoration(
@@ -222,7 +220,7 @@ class _CalendarState extends State<Calendar> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(DateFormat("M월 d일").format(_focusedDay), style: const TextStyle(
+                        Text(DateFormat("M월 d일").format(_selectedDay!), style: const TextStyle(
                             color: Colors.black,
                             fontSize: 23,
                             fontFamily: 'Raleway',
@@ -237,6 +235,8 @@ class _CalendarState extends State<Calendar> {
                         builder: (context, value, _) {
                           return ListView.builder(
                             itemCount: value.length,
+                            controller: scroll,
+                            scrollDirection: Axis.vertical,
                             itemBuilder: (context, index) {
                               return Container(
                                 margin: const EdgeInsets.symmetric(
