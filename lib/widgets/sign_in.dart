@@ -76,8 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Image.asset(
               "assets/image/vector-1.png",
               //width: 413,
-              height: 430,
+              //height: 430,
               width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.54,
               //height: MediaQuery.of(context).size.height,
             ),
           ),
@@ -214,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   child: SizedBox(
-                    width: 329,
+                    width: MediaQuery.of(context).size.width,
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () {

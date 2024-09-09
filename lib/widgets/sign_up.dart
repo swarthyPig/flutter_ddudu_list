@@ -44,11 +44,11 @@ class _SingUpScreenState extends State<SingUpScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 0),
             child: Image.asset(
-              "image/vector-2.png",
+              "assets/image/vector-2.png",
               //width: 413,
-              height: 450,
+              //height: 450,
               width: MediaQuery.of(context).size.width,
-              //height: MediaQuery.of(context).size.height,
+              height: MediaQuery.of(context).size.height * 0.54,
             ),
           ),
           Container(
@@ -245,7 +245,7 @@ class _SingUpScreenState extends State<SingUpScreen> {
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   child: SizedBox(
-                    width: 329,
+                    width: MediaQuery.of(context).size.width,
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () {
